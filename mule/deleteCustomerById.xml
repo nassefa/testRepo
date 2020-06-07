@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="deleteCustomerByIdFlow" doc:id="ebf8ccc4-6f3c-4919-80ae-fb9005b7eb3e" >
+		<http:listener doc:name="Listener" doc:id="8263e404-8bca-4eee-a64e-081dd7591fbd" config-ref="HTTP_Listener_config" path="/deleteCustomer/{id}" allowedMethods="DELETE" />
+		<db:delete doc:name="Delete" doc:id="2807a034-7be3-4eb3-a49c-7f7a2a2e6828" config-ref="Database_Config">
+			<db:sql >DELETE FROM contact WHERE id=:id</db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	'id': attributes.uriParams.id
+}]]]></db:input-parameters>
+		</db:delete>
+		<ee:transform doc:name="Transform Message" doc:id="d432be41-44ce-4207-a9f8-0f31f47826a4" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+
+	payload
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

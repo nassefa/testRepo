@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="createCustomerFlow" doc:id="f9774769-ce8a-4fa7-ac36-76506d5846ec" >
+		<http:listener doc:name="Listener" doc:id="e7fdb091-e224-456e-aa45-c4ed91d97d21" config-ref="HTTP_Listener_config" path="/createCustomer" allowedMethods="POST"/>
+		<db:insert doc:name="Insert" doc:id="8b9dc7cc-50c9-4160-b50b-ba191a56a097" config-ref="Database_Config">
+			<db:sql >INSERT INTO contact (id,first_name,last_name,address,ssn,phone_no,email) VALUES(: id,:first_name,:last_name,:address,:ssn,:phone_no,:email)</db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	id: payload.id
+	,first_name: payload.first_name
+	,last_name: payload.last_name
+	,address: payload.address
+	,ssn: payload.ssn
+	,phone_no: payload.phone_no
+	,email: payload.email
+}]]]></db:input-parameters>
+		</db:insert>
+		<ee:transform doc:name="Transform Message" doc:id="cdf6c54b-a6fd-460b-a429-c009713bdb22" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"Message:": "Customer Created"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>
